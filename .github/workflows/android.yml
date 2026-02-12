@@ -9,25 +9,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      # Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      # Set up JDK
+      - name: Setup Java 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: "17"
 
-      - name: Grant gradlew execute permission
-        run: chmod +x gradlew
+      # Install Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-level: 34
+          build-tools: "34.0.1"
 
+      # Build APK using Gradle wrapper from cloud
       - name: Build Debug APK
-        run: |
-          ./gradlew clean assembleDebug
-          echo "Listing APKs..."
-          find app/build/outputs -name "*.apk"
+        run: ./gradlew assembleDebug || ./gradlew.bat assembleDebug || ./gradlew assembleDebug
 
-      - name: Upload build APK
+      # Upload any APKs found
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
